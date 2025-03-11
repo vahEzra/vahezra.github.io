@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authenticating...</title>
+</head>
+<body>
+    <script>
+        const hash = window.location.hash.substring(1);
+        const params = new URLSearchParams(hash);
+        const accessToken = params.get("access_token");
+
+        if (accessToken) {
+            fetch("https://discord.com/api/users/@me", {
+                headers: { "Authorization": "Bearer " + accessToken }
+            })
+            .then(response => response.json())
+            .then(user => {
+                localStorage.setItem("discord_user", user.username + "#" + user.discriminator);
+                window.location.href = "https://yourusername.github.io/discord-login-page/";
+            })
+            .catch(() => {
+                alert("Failed to fetch user data.");
+                window.location.href = "https://yourusername.github.io/discord-login-page/";
+            });
+        } else {
+            alert("Login failed.");
+            window.location.href = "https://yourusername.github.io/discord-login-page/";
+        }
+    </script>
+</body>
+</html>
