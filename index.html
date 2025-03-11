@@ -19,6 +19,7 @@
             flex-direction: column;
         }
 
+        /* Main Menu - Horizontal Menu Bar */
         .menu {
             background-color: rgb(33, 33, 33);
             width: 100%;
@@ -26,8 +27,8 @@
             display: flex;
             justify-content: center;
             gap: 20px;
-            transform: scale(0); /* Hides the menu by scaling down */
-            transition: transform 0.3s ease-in-out;
+            opacity: 1; /* Always visible */
+            transition: opacity 0.3s ease-in-out;
         }
 
         .menu a {
@@ -47,35 +48,25 @@
             border-bottom: 2px solid #5f9ea0;
         }
 
-        .separator {
-            border-bottom: 1px solid gray;
-            width: 100%;
-            margin: 15px 0;
-        }
-
+        /* The Container for Menu Items */
         .menu-container {
             width: 100%;
             max-width: 600px;
             padding: 20px;
-            background-color: rgb(33, 33, 33);
+            background-color: transparent; /* Make the container transparent */
             border-radius: 15px;
             text-align: center;
-            transform: scale(1); /* Ensures the container is visible and scaled properly */
-            opacity: 0; /* Initially makes the container invisible */
+            opacity: 0; /* Initially invisible */
             transition: opacity 0.3s ease-in-out;
         }
 
-        .menu-container.visible {
-            opacity: 1; /* Make it visible when toggled */
+        /* Content inside menu container remains visible */
+        .menu-container .content {
+            visibility: visible; /* Keep content visible */
         }
 
-        .welcome-message {
-            margin: 10px 0;
-            font-size: 20px;
-            font-weight: bold;
-        }
-
-        .login-btn {
+        /* Login/Logout Buttons */
+        .login-btn, .logout-btn {
             font-family: 'Montserrat', sans-serif;
             font-size: 16px;
             background-color: transparent;
@@ -91,30 +82,11 @@
             text-align: center;
         }
 
-        .login-btn:hover {
+        .login-btn:hover, .logout-btn:hover {
             background-color: #808080;
         }
 
-        .logout-btn {
-            font-family: 'Montserrat', sans-serif;
-            font-size: 16px;
-            background-color: transparent;
-            border: 2px solid #555;
-            border-radius: 8px;
-            padding: 10px 20px;
-            cursor: pointer;
-            outline: none;
-            transition: 0.2s;
-            text-decoration: none;
-            color: white;
-            display: inline-block;
-            margin-top: 10px;
-        }
-
-        .logout-btn:hover {
-            background-color: #808080;
-        }
-
+        /* Not Available Message */
         .not-available {
             color: gray;
             font-size: 18px;
@@ -133,17 +105,19 @@
     <div class="separator"></div>
 
     <div class="menu-container" id="menuContainer">
-        <div class="welcome-message" id="welcomeMessage">
-            Welcome, <span id="username">User</span>!
+        <div class="content">
+            <div class="welcome-message" id="welcomeMessage">
+                Welcome, <span id="username">User</span>!
+            </div>
+            <div id="menuContent">
+                Choose contents from above!
+            </div>
+            <br>
+            <a id="loginButton" href="https://discord.com/oauth2/authorize?client_id=1348972801385562163&redirect_uri=https://vahezra.github.io/auth.html&response_type=token&scope=identify" class="login-btn" style="display:none;">
+                Login
+            </a>
+            <a id="logoutButton" href="#" class="logout-btn" style="display:none;" onclick="logout()">Logout</a>
         </div>
-        <div id="menuContent">
-            Choose contents from above!
-        </div>
-        <br>
-        <a id="loginButton" href="https://discord.com/oauth2/authorize?client_id=1348972801385562163&redirect_uri=https://vahezra.github.io/auth.html&response_type=token&scope=identify" class="login-btn" style="display:none;">
-            Login
-        </a>
-        <a id="logoutButton" href="#" class="logout-btn" style="display:none;" onclick="logout()">Logout</a>
     </div>
 
     <script>
@@ -181,11 +155,10 @@
             menuContent.innerHTML = content;
         }
 
-        // Show and scale the menu container
+        // Show the menu container and make it visible
         function showMenuContainer() {
             const menuContainer = document.getElementById("menuContainer");
-            menuContainer.classList.add("visible"); // Fade in the menu container
-            document.querySelector(".menu").style.transform = "scale(1)"; // Scale the menu back to visible
+            menuContainer.style.opacity = 1; // Make the container visible
         }
 
         // Event listeners to update the selected button and content
