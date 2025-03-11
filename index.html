@@ -13,7 +13,7 @@
             font-family: 'Montserrat', sans-serif;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
+            align-items: center;
             height: 100vh;
             margin: 0;
             flex-direction: column;
@@ -26,6 +26,8 @@
             display: flex;
             justify-content: center;
             gap: 20px;
+            transform: scale(0); /* Hides the menu by scaling down */
+            transition: transform 0.3s ease-in-out;
         }
 
         .menu a {
@@ -58,6 +60,13 @@
             background-color: rgb(33, 33, 33);
             border-radius: 15px;
             text-align: center;
+            transform: scale(1); /* Ensures the container is visible and scaled properly */
+            opacity: 0; /* Initially makes the container invisible */
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .menu-container.visible {
+            opacity: 1; /* Make it visible when toggled */
         }
 
         .welcome-message {
@@ -86,6 +95,26 @@
             background-color: #808080;
         }
 
+        .logout-btn {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            background-color: transparent;
+            border: 2px solid #555;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            outline: none;
+            transition: 0.2s;
+            text-decoration: none;
+            color: white;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        .logout-btn:hover {
+            background-color: #808080;
+        }
+
         .not-available {
             color: gray;
             font-size: 18px;
@@ -103,7 +132,7 @@
 
     <div class="separator"></div>
 
-    <div class="menu-container">
+    <div class="menu-container" id="menuContainer">
         <div class="welcome-message" id="welcomeMessage">
             Welcome, <span id="username">User</span>!
         </div>
@@ -114,6 +143,7 @@
         <a id="loginButton" href="https://discord.com/oauth2/authorize?client_id=1348972801385562163&redirect_uri=https://vahezra.github.io/auth.html&response_type=token&scope=identify" class="login-btn" style="display:none;">
             Login
         </a>
+        <a id="logoutButton" href="#" class="logout-btn" style="display:none;" onclick="logout()">Logout</a>
     </div>
 
     <script>
@@ -122,9 +152,18 @@
             const savedUser = localStorage.getItem("discord_user");
             if (savedUser) {
                 document.getElementById("username").textContent = savedUser;
-                document.getElementById("loginButton").textContent = "@" + savedUser;
-                document.getElementById("loginButton").removeAttribute("href"); // Make it a label
+                document.getElementById("loginButton").style.display = "none";
+                document.getElementById("logoutButton").style.display = "inline-block";
+            } else {
+                document.getElementById("loginButton").style.display = "inline-block";
+                document.getElementById("logoutButton").style.display = "none";
             }
+        }
+
+        // Function to logout and clear localStorage
+        function logout() {
+            localStorage.removeItem("discord_user");
+            checkLogin(); // Refresh login/logout state
         }
 
         // Change the selected menu item style
@@ -142,20 +181,30 @@
             menuContent.innerHTML = content;
         }
 
+        // Show and scale the menu container
+        function showMenuContainer() {
+            const menuContainer = document.getElementById("menuContainer");
+            menuContainer.classList.add("visible"); // Fade in the menu container
+            document.querySelector(".menu").style.transform = "scale(1)"; // Scale the menu back to visible
+        }
+
         // Event listeners to update the selected button and content
         document.getElementById("homeButton").addEventListener("click", function() {
             selectMenuItem("homeButton");
             updateMenuContent("Choose contents from above!");
+            showMenuContainer();
         });
         document.getElementById("accountButton").addEventListener("click", function() {
             selectMenuItem("accountButton");
             updateMenuContent("<div id='loginMessage'>Please log in to access your account.</div>");
             document.getElementById("loginButton").style.display = "inline-block";
+            showMenuContainer();
         });
         document.getElementById("gamesButton").addEventListener("click", function() {
             selectMenuItem("gamesButton");
             updateMenuContent("<div class='not-available'>Not currently available</div>");
             document.getElementById("loginButton").style.display = "none";
+            showMenuContainer();
         });
 
         // Initialize on page load
