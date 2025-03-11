@@ -3,31 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Authenticating...</title>
+    <title>Authentication</title>
 </head>
 <body>
-    <script>
-        const hash = window.location.hash.substring(1);
-        const params = new URLSearchParams(hash);
-        const accessToken = params.get("access_token");
 
-        if (accessToken) {
-            fetch("https://discord.com/api/users/@me", {
-                headers: { "Authorization": "Bearer " + accessToken }
-            })
-            .then(response => response.json())
-            .then(user => {
-                localStorage.setItem("discord_user", user.username + "#" + user.discriminator);
-                window.location.href = "https://vahezra.github.io/";
-            })
-            .catch(() => {
-                alert("Failed to fetch user data.");
-                window.location.href = "https://vahezra.github.io/";
-            });
-        } else {
-            alert("Login failed.");
-            window.location.href = "https://vahezra.github.io/";
+    <script>
+        // Function to parse the URL parameters (including the token)
+        function getQueryParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                accessToken: params.get('access_token')
+            };
         }
+
+        // Save the access token to localStorage and redirect to the index page
+        function saveToken() {
+            const params = getQueryParams();
+            if (params.accessToken) {
+                localStorage.setItem("discord_user", params.accessToken);
+            }
+            window.location.href = "index.html";
+        }
+
+        // Call the function to save the token
+        saveToken();
     </script>
+
 </body>
 </html>
