@@ -46,8 +46,8 @@
         }
 
         .menu a.selected {
-            color: #3a8d99; /* Light blue with a bit darker shade */
-            border-bottom: 2px solid #3a8d99; /* Underline effect */
+            color: #3a8d99;
+            border-bottom: 2px solid #3a8d99;
         }
 
         .separator {
@@ -101,7 +101,6 @@
         .logout-btn:hover {
             background-color: #808080;
         }
-
     </style>
 </head>
 <body>
@@ -120,9 +119,7 @@
             <div class="welcome-message" id="welcomeMessage">
                 Welcome, <span id="username">User</span>!
             </div>
-            <div>
-                Choose contents from above!
-            </div>
+            <div>Choose contents from above!</div>
         </div>
 
         <!-- Account Section -->
@@ -143,24 +140,22 @@
     </div>
 
     <script>
-        // Function to check localStorage for a saved username
         function checkLogin() {
             const savedUser = localStorage.getItem("discord_user");
             if (savedUser) {
                 document.getElementById("username").textContent = savedUser;
                 document.getElementById("loginButton").textContent = "@" + savedUser;
-                document.getElementById("loginButton").removeAttribute("href"); // Make it a label
+                document.getElementById("loginButton").removeAttribute("href");
                 document.getElementById("logoutButton").style.display = "inline-block";
             }
         }
 
-        // Function to handle logout
+        // Logout function
         function logout() {
             localStorage.removeItem("discord_user");
             location.reload(); // Reload the page after logout
         }
 
-        // Change the selected menu item style
         function selectMenuItem(selectedId) {
             const buttons = document.querySelectorAll(".menu a");
             buttons.forEach(button => {
@@ -169,7 +164,6 @@
             document.getElementById(selectedId).classList.add("selected");
         }
 
-        // Show sections based on selected menu item
         function showSection(section) {
             document.querySelectorAll('.home-section, .account-section, .games-section').forEach((sectionElement) => {
                 sectionElement.style.display = 'none';
@@ -177,23 +171,24 @@
             document.querySelector(`.${section}-section`).style.display = 'block';
         }
 
-        // Event listeners to update the selected button and display content
         document.getElementById("homeButton").addEventListener("click", function() {
             selectMenuItem("homeButton");
             showSection("home");
         });
+
         document.getElementById("accountButton").addEventListener("click", function() {
             selectMenuItem("accountButton");
             showSection("account");
         });
+
         document.getElementById("gamesButton").addEventListener("click", function() {
             selectMenuItem("gamesButton");
             showSection("games");
         });
 
-        // Initialize on page load
+        // On load, check if user is already logged in
         checkLogin();
-        showSection("home"); // Default to Home section on load
+        showSection("home");
     </script>
 
 </body>
