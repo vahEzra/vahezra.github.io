@@ -18,15 +18,15 @@
             .then(response => response.json())
             .then(user => {
                 localStorage.setItem("discord_user", user.username + "#" + user.discriminator);
-                window.location.href = "https://yourusername.github.io/discord-login-page/";
+                window.location.href = "https://vahezra.github.io/";
             })
             .catch(() => {
                 alert("Failed to fetch user data.");
-                window.location.href = "https://yourusername.github.io/discord-login-page/";
+                window.location.href = "https://vahezra.github.io/";
             });
         } else {
             alert("Login failed.");
-            window.location.href = "https://yourusername.github.io/discord-login-page/";
+            window.location.href = "https://vahezra.github.io/";
         }
     </script>
 </body>
