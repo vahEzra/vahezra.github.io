@@ -19,16 +19,18 @@
             flex-direction: column;
         }
 
-        /* Main Menu - Horizontal Menu Bar */
-        .menu {
+        .dashboard {
             background-color: rgb(33, 33, 33);
-            width: 100%;
-            padding: 15px 0;
+            padding: 30px;
+            border-radius: 15px;
+            width: 320px;
+            text-align: center;
+        }
+
+        .menu {
             display: flex;
-            justify-content: center;
-            gap: 20px;
-            opacity: 1; /* Always visible */
-            transition: opacity 0.3s ease-in-out;
+            justify-content: space-around;
+            margin-bottom: 20px;
         }
 
         .menu a {
@@ -44,29 +46,23 @@
         }
 
         .menu a.selected {
-            color: #5f9ea0;
-            border-bottom: 2px solid #5f9ea0;
+            color: #3a8d99; /* Light blue with a bit darker shade */
+            border-bottom: 2px solid #3a8d99; /* Underline effect */
         }
 
-        /* The Container for Menu Items */
-        .menu-container {
-            width: 100%;
-            max-width: 600px;
-            padding: 20px;
-            background-color: transparent; /* Make the container transparent */
-            border-radius: 15px;
-            text-align: center;
-            opacity: 0; /* Initially invisible */
-            transition: opacity 0.3s ease-in-out;
+        .separator {
+            border-bottom: 1px solid gray;
+            margin: 20px 0;
         }
 
-        /* Content inside menu container remains visible */
-        .menu-container .content {
-            visibility: visible; /* Keep content visible */
+        .welcome-message {
+            margin: 10px 0;
+            font-size: 20px;
+            font-weight: bold;
+            color: white;
         }
 
-        /* Login/Logout Buttons */
-        .login-btn, .logout-btn {
+        .login-btn {
             font-family: 'Montserrat', sans-serif;
             font-size: 16px;
             background-color: transparent;
@@ -82,41 +78,66 @@
             text-align: center;
         }
 
-        .login-btn:hover, .logout-btn:hover {
+        .login-btn:hover {
             background-color: #808080;
         }
 
-        /* Not Available Message */
-        .not-available {
-            color: gray;
-            font-size: 18px;
+        .logout-btn {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 16px;
+            background-color: transparent;
+            border: 2px solid #555;
+            border-radius: 8px;
+            padding: 10px 20px;
+            cursor: pointer;
+            outline: none;
+            transition: 0.2s;
+            text-decoration: none;
+            color: white;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .logout-btn:hover {
+            background-color: #808080;
         }
 
     </style>
 </head>
 <body>
 
-    <div class="menu">
-        <a href="#" id="homeButton" class="selected">Home</a>
-        <a href="#" id="accountButton">Account</a>
-        <a href="#" id="gamesButton">Games</a>
-    </div>
+    <div class="dashboard">
+        <div class="menu">
+            <a href="#" id="homeButton" class="selected">Home</a>
+            <a href="#" id="accountButton">Account</a>
+            <a href="#" id="gamesButton">Games</a>
+        </div>
+        <div class="separator"></div>
 
-    <div class="separator"></div>
-
-    <div class="menu-container" id="menuContainer">
-        <div class="content">
+        <!-- Home Section -->
+        <div class="home-section">
             <div class="welcome-message" id="welcomeMessage">
                 Welcome, <span id="username">User</span>!
             </div>
-            <div id="menuContent">
+            <div>
                 Choose contents from above!
             </div>
-            <br>
-            <a id="loginButton" href="https://discord.com/oauth2/authorize?client_id=1348972801385562163&redirect_uri=https://vahezra.github.io/auth.html&response_type=token&scope=identify" class="login-btn" style="display:none;">
+        </div>
+
+        <!-- Account Section -->
+        <div class="account-section" style="display:none;">
+            <a id="loginButton" href="https://discord.com/oauth2/authorize?client_id=1348972801385562163&redirect_uri=https://vahezra.github.io/auth.html&response_type=token&scope=identify" class="login-btn">
                 Login
             </a>
-            <a id="logoutButton" href="#" class="logout-btn" style="display:none;" onclick="logout()">Logout</a>
+            <br>
+            <a id="logoutButton" class="logout-btn" style="display:none;" href="#" onclick="logout()">
+                Logout
+            </a>
+        </div>
+
+        <!-- Games Section -->
+        <div class="games-section" style="display:none;">
+            <div>Not currently available</div>
         </div>
     </div>
 
@@ -126,18 +147,16 @@
             const savedUser = localStorage.getItem("discord_user");
             if (savedUser) {
                 document.getElementById("username").textContent = savedUser;
-                document.getElementById("loginButton").style.display = "none";
+                document.getElementById("loginButton").textContent = "@" + savedUser;
+                document.getElementById("loginButton").removeAttribute("href"); // Make it a label
                 document.getElementById("logoutButton").style.display = "inline-block";
-            } else {
-                document.getElementById("loginButton").style.display = "inline-block";
-                document.getElementById("logoutButton").style.display = "none";
             }
         }
 
-        // Function to logout and clear localStorage
+        // Function to handle logout
         function logout() {
             localStorage.removeItem("discord_user");
-            checkLogin(); // Refresh login/logout state
+            location.reload(); // Reload the page after logout
         }
 
         // Change the selected menu item style
@@ -149,39 +168,31 @@
             document.getElementById(selectedId).classList.add("selected");
         }
 
-        // Update the menu content based on the selected item
-        function updateMenuContent(content) {
-            const menuContent = document.getElementById("menuContent");
-            menuContent.innerHTML = content;
+        // Show sections based on selected menu item
+        function showSection(section) {
+            document.querySelectorAll('.home-section, .account-section, .games-section').forEach((sectionElement) => {
+                sectionElement.style.display = 'none';
+            });
+            document.querySelector(`.${section}-section`).style.display = 'block';
         }
 
-        // Show the menu container and make it visible
-        function showMenuContainer() {
-            const menuContainer = document.getElementById("menuContainer");
-            menuContainer.style.opacity = 1; // Make the container visible
-        }
-
-        // Event listeners to update the selected button and content
+        // Event listeners to update the selected button and display content
         document.getElementById("homeButton").addEventListener("click", function() {
             selectMenuItem("homeButton");
-            updateMenuContent("Choose contents from above!");
-            showMenuContainer();
+            showSection("home");
         });
         document.getElementById("accountButton").addEventListener("click", function() {
             selectMenuItem("accountButton");
-            updateMenuContent("<div id='loginMessage'>Please log in to access your account.</div>");
-            document.getElementById("loginButton").style.display = "inline-block";
-            showMenuContainer();
+            showSection("account");
         });
         document.getElementById("gamesButton").addEventListener("click", function() {
             selectMenuItem("gamesButton");
-            updateMenuContent("<div class='not-available'>Not currently available</div>");
-            document.getElementById("loginButton").style.display = "none";
-            showMenuContainer();
+            showSection("games");
         });
 
         // Initialize on page load
         checkLogin();
+        showSection("home"); // Default to Home section on load
     </script>
 
 </body>
