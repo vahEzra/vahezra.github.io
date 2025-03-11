@@ -1,0 +1,268 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rabbit LLC</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <!-- Font Awesome for icons -->
+    <style>
+        body {
+            background: linear-gradient(to right, #1f1f1f, #2c2c2c); /* Gradient background */
+            color: #f0f0f0;
+            font-family: 'Montserrat', sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            justify-content: center;
+            text-align: center;
+            overflow: hidden;
+            transition: all 0.3s ease; /* Smooth transition */
+        }
+
+        .dashboard-btn {
+            background-color: transparent;
+            color: #ffffff;
+            font-size: 1em;
+            padding: 8px 18px;
+            border: 1px solid #ffffff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Hover effect */
+        }
+
+        .dashboard-btn:hover {
+            background-color: #0856a4;
+            transform: scale(1.05); /* Slightly grow on hover */
+        }
+
+        /* Main Content Style */
+        .main-content {
+            padding: 20px;
+            background-color: #3c3c3c;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 650px;
+            transition: transform 0.3s ease;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Soft shadow */
+        }
+
+        h1 {
+            color: #ff6347;
+            font-size: 2.5em;
+            margin-bottom: 0.5em;
+            font-weight: 700;
+        }
+
+        p {
+            color: #b0b0b0;
+            font-size: 1em;
+        }
+
+        .continue-btn {
+            background-color: transparent;
+            color: #ffffff;
+            font-size: 1em;
+            padding: 12px 25px;
+            border: 1px solid #ffffff;
+            cursor: pointer;
+            margin-top: 20px;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .continue-btn:hover {
+            background-color: #0872d4;
+            transform: scale(1.05);
+        }
+
+        /* Dashboard Style - Full screen, behind main content */
+        .dashboard-content {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9); /* Black background */
+            z-index: 1;
+            padding: 20px;
+            color: white;
+            transition: transform 0.4s ease; /* Smooth transition */
+        }
+
+        .dashboard-content.active {
+            display: block;
+            transform: scale(1); /* Add scaling effect when shown */
+        }
+
+        /* Dashboard buttons positioned vertically at top-left */
+        .dashboard-buttons {
+            display: flex;
+            flex-direction: column; /* Make buttons vertical */
+            gap: 20px;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+        }
+
+        .dashboard-buttons button {
+            background-color: transparent;
+            color: #ffffff;
+            font-size: 1em;
+            padding: 8px 18px;
+            border: 1px solid #ffffff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .dashboard-buttons button:hover {
+            background-color: #0856a4;
+            transform: scale(1.05);
+        }
+
+        .dashboard-buttons button:active {
+            background-color: #033c59; /* Turn darker when pressed */
+        }
+
+        /* Close button style at the top-right */
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 2em;
+            color: #ffffff;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: #ff6347; /* Change color on hover */
+        }
+
+        /* Notification Style */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: linear-gradient(to right, #5c6bc0, #3949ab); /* Gradient background */
+            color: #ffffff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            z-index: 3;
+            opacity: 0;
+            transition: all 0.6s ease;
+        }
+
+        .notification .icon {
+            margin-right: 15px;
+            font-size: 1.8em;
+        }
+
+        .notification .dismiss-btn {
+            background-color: transparent;
+            border: none;
+            color: #ffffff;
+            font-size: 1.6em;
+            cursor: pointer;
+            transition: opacity 0.3s ease;
+        }
+
+        .notification .dismiss-btn:hover {
+            opacity: 0.7;
+        }
+
+        /* Animation classes */
+        .show {
+            opacity: 1;
+            left: 20px; /* Sways in to the left */
+        }
+
+        .sway-out {
+            left: -400px; /* Move out to the left */
+        }
+
+    </style>
+</head>
+<body>
+    <div class="top-bar" id="top-bar">
+        <button class="dashboard-btn" id="dashboard-btn" onclick="toggleDashboard()">Dashboard</button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>Rabbit LLC</h1>
+        <p>A Roblox server-side executor.</p>
+        <button class="continue-btn" onclick="window.open('https://discord.gg/fUdfKhyKJJ', '_blank')">Continue</button>
+    </div>
+
+    <!-- Dashboard Content (hidden initially) -->
+    <div class="dashboard-content" id="dashboard-content">
+        <button class="close-btn" onclick="toggleDashboard()">×</button>
+        
+        <!-- Dashboard buttons positioned vertically at top-left -->
+        <div class="dashboard-buttons">
+            <button onclick="goHome()">Home</button>
+            <button onclick="showInfo()">Info</button>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div class="notification" id="notification">
+        <i class="fas fa-info-circle icon"></i>
+        <div class="text">Welcome to Rabbit Web!</div>
+        <button class="dismiss-btn" onclick="dismissNotification()">×</button>
+    </div>
+
+    <script>
+        function toggleDashboard() {
+            const dashboardContent = document.getElementById('dashboard-content');
+            const topBar = document.getElementById('top-bar');
+            const dashboardBtn = document.getElementById('dashboard-btn');
+            dashboardContent.classList.toggle('active');
+            
+            // Hide main content when dashboard is shown
+            const mainContent = document.querySelector('.main-content');
+            mainContent.style.display = dashboardContent.classList.contains('active') ? 'none' : 'block';
+            
+            // Hide dashboard button when in dashboard
+            dashboardBtn.style.display = dashboardContent.classList.contains('active') ? 'none' : 'block';
+        }
+
+        // Show notification after 1 second, sways in, and after 8 seconds, sways out
+        setTimeout(() => {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+
+            // After 8 seconds, start swaying out
+            setTimeout(() => {
+                notification.classList.add('sway-out');
+            }, 8000);
+
+        }, 1000); // Wait for 1 second to show notification
+
+        // Dismiss notification
+        function dismissNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('sway-out');
+        }
+
+        // Placeholder functions for Home and Info buttons
+        function goHome() {
+            alert('Navigating to Home...');
+        }
+
+        function showInfo() {
+            alert('Displaying Info...');
+        }
+    </script>
+</body>
+</html>
