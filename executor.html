@@ -29,10 +29,10 @@
     <div id="editor-container"></div>
 
     <script type="module">
-        import { EditorView, keymap } from "@codemirror/view";
+        import { EditorView, basicSetup } from "@codemirror/view";
         import { EditorState, Compartment } from "@codemirror/state";
         import { syntaxHighlighting, HighlightStyle } from "@codemirror/language";
-        import { oneDark } from "@codemirror/basic-setup";
+        import { oneDark } from "@codemirror/theme-one-dark";
         import { autocompletion, completeFromList } from "@codemirror/autocomplete";
         import { tags } from "@lezer/highlight";
 
@@ -70,9 +70,10 @@
         const state = EditorState.create({
             doc: "-- hello",
             extensions: [
-                oneDark, // Dark theme
+                basicSetup, // Use default setup (keyboard navigation, etc.)
                 syntaxHighlighting(luaHighlightStyle), // Custom Lua highlighting
                 autocompletion({ override: [luaCompletions] }), // Always-on intellisense
+                oneDark, // Dark theme
                 languageConfig.of([]) // Placeholder for future language features
             ]
         });
