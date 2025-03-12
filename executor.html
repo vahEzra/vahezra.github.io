@@ -3,32 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lua Editor</title>
+    <title>Custom Lua Editor</title>
     
-    <!-- CodeMirror CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+    <!-- CodeMirror 6 Dependencies -->
+    <script type="module">
+        import { EditorView, basicSetup } from "https://codemirror.net/6/examples/bundle.js";
+        import { LRLanguage, LanguageSupport, syntaxTree } from "@codemirror/language";
+        import { styleTags, tags } from "@lezer/highlight";
+        import { HighlightStyle } from "@codemirror/language";
+        import { oneDark } from "@codemirror/theme-one-dark";
+        import { autocompletion } from "@codemirror/autocomplete";
 
-    <!-- CodeMirror JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/lua/lua.min.js"></script>
+        // 🔹 Custom Lua Syntax Highlighter
+        const luaHighlightStyle = HighlightStyle.define([
+            { tag: tags.keyword, color: "#ff79c6" }, // Keywords
+            { tag: tags.comment, color: "#6272a4" }, // Comments
+            { tag: tags.string, color: "#f1fa8c" }, // Strings
+            { tag: tags.number, color: "#bd93f9" }, // Numbers
+            { tag: tags.variableName, color: "#50fa7b" }, // Variables
+            { tag: tags.operator, color: "#ffb86c" }, // Operators
+        ]);
 
-    <style>
-        body { margin: 0; background: #1e1e1e; display: flex; height: 100vh; overflow: hidden; }
-        .CodeMirror { width: 100%; height: 100vh; font-size: 16px; }
-    </style>
-</head>
-<body>
-    <textarea id="editor">-- hello</textarea>
-    <script>
-        var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
-            mode: "text/x-lua", // Correct mode for Lua
-            lineNumbers: true,
-            theme: "dracula", // Ensuring theme loads correctly
-            indentUnit: 4,
-            tabSize: 4,
-            cursorBlinkRate: 530
+        // 🔹 Custom Lua Language Definition
+        const luaLanguage = LRLanguage.define({
+            parser: new (class {
+                parse(input) {
+                    return {
+                        toTree: () => syntaxTree(input),
+                    };
+                }
+            })(),
+            languageData: {
+                commentTokens: { line: "--" },
+            },
+        });
+
+        // 🔹 Lua Autocomplete Suggestions
+        const luaCompletions = [
+            { label: "print", type: "function", info: "print(value)" },
+            { label: "function", type: "keyword" },
+            { label: "local", type: "keyword" },
+            { label: "if", type: "keyword" },
+            { label: "then", type: "keyword" },
+            { label: "end", type: "keyword" },
+            { label: "while", type: "keyword" },
+            { label: "repeat", type: "keyword" },
+            { label: "until", type: "keyword" },
+            { label: "return", type: "keyword" },
+            { label: "true", type: "constant" },
+            { label: "false", type: "constant" },
+            { label: "nil", type: "constant" },
+        ];
+
+        const luaAutocomplete = autocompletion({
+            override: [context => {
+                let word = context.matchBefore(/\w*/);
+                if (!word || word.from === word.to) return null;
+                return {
+                    from: word.from,
+                    options: luaCompletions,
+                    validFor: /^\w*$/,
+                };
+            }],
+        });
+
+        // 🔹 Create Editor
+        new EditorView({
+            doc: "-- hello",
+            extensions: [
+                basicSetup,
+                new LanguageSupport(luaLanguage, [luaHighlightStyle]),
+                oneDark,
+                luaAutocomplete,
+            ],
+            parent: document.body,
         });
     </script>
-</body>
+
+    <style>
+        body { margin: 0; background: #282a36; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .cm-editor { width: 100%; height: 100vh; font-size: 16px; }
+    </style>
+</head>
+<body></body>
 </html>
