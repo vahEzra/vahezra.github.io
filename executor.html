@@ -3,43 +3,51 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Custom Lua Editor</title>
-    
-    <!-- CodeMirror 6 Dependencies -->
-    <script type="module">
-        import { EditorView, basicSetup } from "https://codemirror.net/6/examples/bundle.js";
-        import { LRLanguage, LanguageSupport, syntaxTree } from "@codemirror/language";
-        import { styleTags, tags } from "@lezer/highlight";
-        import { HighlightStyle } from "@codemirror/language";
-        import { oneDark } from "@codemirror/theme-one-dark";
-        import { autocompletion } from "@codemirror/autocomplete";
+    <title>Lua Editor</title>
 
-        // 🔹 Custom Lua Syntax Highlighter
+    <!-- CodeMirror 6 Dependencies -->
+    <script type="importmap">
+        {
+            "imports": {
+                "@codemirror/view": "https://cdn.jsdelivr.net/npm/@codemirror/view@6.22.0/+esm",
+                "@codemirror/state": "https://cdn.jsdelivr.net/npm/@codemirror/state@6.2.0/+esm",
+                "@codemirror/language": "https://cdn.jsdelivr.net/npm/@codemirror/language@6.10.0/+esm",
+                "@codemirror/basic-setup": "https://cdn.jsdelivr.net/npm/@codemirror/basic-setup@6.0.1/+esm",
+                "@codemirror/autocomplete": "https://cdn.jsdelivr.net/npm/@codemirror/autocomplete@6.9.0/+esm",
+                "@lezer/highlight": "https://cdn.jsdelivr.net/npm/@lezer/highlight@1.1.0/+esm"
+            }
+        }
+    </script>
+
+    <style>
+        body { margin: 0; background: #282a36; display: flex; height: 100vh; justify-content: center; align-items: center; }
+        #editor-container { width: 90vw; height: 90vh; border: 2px solid #444; border-radius: 8px; overflow: hidden; }
+        .cm-editor { height: 100%; font-size: 16px; }
+    </style>
+</head>
+<body>
+    <div id="editor-container"></div>
+
+    <script type="module">
+        import { EditorView, keymap } from "@codemirror/view";
+        import { EditorState, Compartment } from "@codemirror/state";
+        import { syntaxHighlighting, HighlightStyle } from "@codemirror/language";
+        import { oneDark } from "@codemirror/basic-setup";
+        import { autocompletion, completeFromList } from "@codemirror/autocomplete";
+        import { tags } from "@lezer/highlight";
+
+        // 🔹 Custom Lua Syntax Highlighting
         const luaHighlightStyle = HighlightStyle.define([
-            { tag: tags.keyword, color: "#ff79c6" }, // Keywords
-            { tag: tags.comment, color: "#6272a4" }, // Comments
-            { tag: tags.string, color: "#f1fa8c" }, // Strings
-            { tag: tags.number, color: "#bd93f9" }, // Numbers
+            { tag: tags.keyword, color: "#ff79c6" }, // Keywords (e.g., if, then, function)
+            { tag: tags.comment, color: "#6272a4" }, // Comments (-- this is a comment)
+            { tag: tags.string, color: "#f1fa8c" }, // Strings ("hello world")
+            { tag: tags.number, color: "#bd93f9" }, // Numbers (123, 3.14)
             { tag: tags.variableName, color: "#50fa7b" }, // Variables
-            { tag: tags.operator, color: "#ffb86c" }, // Operators
+            { tag: tags.operator, color: "#ffb86c" } // Operators (+, -, *, /)
         ]);
 
-        // 🔹 Custom Lua Language Definition
-        const luaLanguage = LRLanguage.define({
-            parser: new (class {
-                parse(input) {
-                    return {
-                        toTree: () => syntaxTree(input),
-                    };
-                }
-            })(),
-            languageData: {
-                commentTokens: { line: "--" },
-            },
-        });
-
-        // 🔹 Lua Autocomplete Suggestions
-        const luaCompletions = [
+        // 🔹 Lua Auto-Complete Suggestions
+        const luaCompletions = completeFromList([
             { label: "print", type: "function", info: "print(value)" },
             { label: "function", type: "keyword" },
             { label: "local", type: "keyword" },
@@ -52,38 +60,28 @@
             { label: "return", type: "keyword" },
             { label: "true", type: "constant" },
             { label: "false", type: "constant" },
-            { label: "nil", type: "constant" },
-        ];
+            { label: "nil", type: "constant" }
+        ]);
 
-        const luaAutocomplete = autocompletion({
-            override: [context => {
-                let word = context.matchBefore(/\w*/);
-                if (!word || word.from === word.to) return null;
-                return {
-                    from: word.from,
-                    options: luaCompletions,
-                    validFor: /^\w*$/,
-                };
-            }],
-        });
+        // 🔹 Lua Language Mode
+        const languageConfig = new Compartment();
 
-        // 🔹 Create Editor
-        new EditorView({
+        // 🔹 Create Editor State
+        const state = EditorState.create({
             doc: "-- hello",
             extensions: [
-                basicSetup,
-                new LanguageSupport(luaLanguage, [luaHighlightStyle]),
-                oneDark,
-                luaAutocomplete,
-            ],
-            parent: document.body,
+                oneDark, // Dark theme
+                syntaxHighlighting(luaHighlightStyle), // Custom Lua highlighting
+                autocompletion({ override: [luaCompletions] }), // Always-on intellisense
+                languageConfig.of([]) // Placeholder for future language features
+            ]
+        });
+
+        // 🔹 Attach Editor to Container
+        const view = new EditorView({
+            state,
+            parent: document.getElementById("editor-container")
         });
     </script>
-
-    <style>
-        body { margin: 0; background: #282a36; height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .cm-editor { width: 100%; height: 100vh; font-size: 16px; }
-    </style>
-</head>
-<body></body>
+</body>
 </html>
