@@ -4,23 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lua Editor</title>
+    
+    <!-- CodeMirror CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/theme/dracula.min.css">
+
+    <!-- CodeMirror JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/lua/lua.min.js"></script>
+
     <style>
-        body { margin: 0; background: #1e1e1e; display: flex; height: 100vh; }
-        .CodeMirror { width: 100%; height: 100vh; font-size: 16px; color: white; background: #1e1e1e; }
+        body { margin: 0; background: #1e1e1e; display: flex; height: 100vh; overflow: hidden; }
+        .CodeMirror { width: 100%; height: 100vh; font-size: 16px; }
     </style>
 </head>
 <body>
     <textarea id="editor">-- hello</textarea>
     <script>
         var editor = CodeMirror.fromTextArea(document.getElementById("editor"), {
-            mode: "lua",
+            mode: "text/x-lua", // Correct mode for Lua
             lineNumbers: true,
-            theme: "material-darker",
+            theme: "dracula", // Ensuring theme loads correctly
             indentUnit: 4,
-            tabSize: 4
+            tabSize: 4,
+            cursorBlinkRate: 530
         });
     </script>
 </body>
