@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>API Response</title>
+        <style>
+            body {
+                background-color: #121212;
+                color: black;
+                font-family: Arial, sans-serif;
+            }
+
+            pre {
+                background-color: #000000;
+                color: #ffffff;
+                padding: 15px;
+                border-radius: 5px;
+                font-family: monospace;
+                overflow-x: auto;
+                word-wrap: break-word;
+                white-space: pre-wrap;
+            }
+        </style>
+    </head>
+    <body>
+        <script>
+            window.onload = function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const apikey = urlParams.get('apikey');
+                const access = urlParams.get('access');
+                
+                let responseText;
+
+                // Check if both apikey and access are provided
+                if (!apikey || !access) {
+                    responseText = '{"success":false,"message":"Invalid or missing parameters. Expected format: ?apikey=val&access=val"}';
+                }
+                // Validate apikey and access values
+                else if (apikey === 'X3F9G7L2P1Q8J5M0' && access === '1') {
+                    responseText = '{"success":true,"message":"Successfully Requested. (1a)"}';
+                } else {
+                    responseText = '{"success":false,"message":"Fake Request. (2a)"}';
+                }
+
+                // Display the response text inside a pre block
+                const pre = document.createElement('pre');
+                pre.textContent = responseText;
+                document.body.appendChild(pre);
+            }
+        </script>
+    </body>
+</html>
