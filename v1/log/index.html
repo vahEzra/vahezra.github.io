@@ -24,18 +24,17 @@
     <body>
         <script>
             window.onload = function() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const apikey = urlParams.get('apikey');
-                const access = urlParams.get('access');
+                const pathParts = window.location.pathname.split('/'); 
+                const apikey = pathParts[pathParts.length - 1]; // Get the last part of the URL path
                 
                 let responseText;
 
-                // Check if both apikey and access are provided
-                if (!apikey || !access) {
-                    responseText = '{"success":false,"message":"Invalid or missing parameters. Expected format: ?apikey=val&access=val"}';
+                // Check if apikey is provided
+                if (!apikey || apikey === "log") {
+                    responseText = '{"success":false,"message":"Invalid or missing API key. Expected format: /v1/log/apikey-value"}';
                 }
-                // Validate apikey and access values
-                else if (apikey === 'X3F9G7L2P1Q8J5M0' && access === '1') {
+                // Validate apikey
+                else if (apikey === 'X3F9G7L2P1Q8J5M0') {
                     responseText = '{"success":true,"message":"Successfully Requested. (1a)"}';
                 } else {
                     responseText = '{"success":false,"message":"Fake Request. (2a)"}';
