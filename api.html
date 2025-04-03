@@ -2,6 +2,24 @@
 <html lang="en">
     <head>
         <title>API Response</title>
+        <style>
+            body {
+                background-color: #121212;
+                color: black;
+                font-family: Arial, sans-serif;
+            }
+
+            pre {
+                background-color: #000000;
+                color: #ffffff;
+                padding: 15px;
+                border-radius: 5px;
+                font-family: monospace;
+                overflow-x: auto;
+                word-wrap: break-word;
+                white-space: pre-wrap;
+            }
+        </style>
     </head>
     <body>
         <script>
@@ -12,14 +30,12 @@
                 
                 let responseText;
                 if (apikey === 'X3F9G7L2P1Q8J5M0' && access === '1') {
-                    responseText = '{"success":true,"message":"Successfuly Request. (1a)"}';
+                    responseText = '{"success":true,"message":"Successfully Requested. (1a)"}';
                 } else {
                     responseText = '{"success":false,"message":"Fake Request. (2a)"}';
                 }
 
                 const pre = document.createElement('pre');
-                pre.style.wordWrap = 'break-word';
-                pre.style.whiteSpace = 'pre-wrap';
                 pre.textContent = responseText;
                 document.body.appendChild(pre);
             }
