@@ -29,19 +29,21 @@
                 const access = urlParams.get('access');
                 
                 let responseText;
-                if (apikey === 'X3F9G7L2P1Q8J5M0' && access === '1') {
+
+                // Check if both apikey and access are provided
+                if (!apikey || !access) {
+                    responseText = '{"success":false,"message":"Invalid or missing parameters. Expected format: ?apikey=val&access=val"}';
+                }
+                // Validate apikey and access values
+                else if (apikey === 'X3F9G7L2P1Q8J5M0' && access === '1') {
                     responseText = '{"success":true,"message":"Successfully Requested. (1a)"}';
-                    document.documentElement.innerHTML = responseText;
                 } else {
                     responseText = '{"success":false,"message":"Fake Request. (2a)"}';
-                    document.documentElement.innerHTML = responseText;
                 }
 
+                // Display the response text inside a pre block
                 const pre = document.createElement('pre');
-
-                // Escape HTML characters to display HTML as plain text
                 pre.textContent = responseText;
-
                 document.body.appendChild(pre);
             }
         </script>
