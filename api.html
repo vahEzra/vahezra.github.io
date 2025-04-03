@@ -36,7 +36,10 @@
                 }
 
                 const pre = document.createElement('pre');
+
+                // Escape HTML characters to display HTML as plain text
                 pre.textContent = responseText;
+
                 document.body.appendChild(pre);
             }
         </script>
