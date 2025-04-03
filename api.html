@@ -1,13 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-    <script>
-        window.onload = function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('key') === '1234567890') {
-                alert('result(0)');
-            } else {
-                alert('resukt(1)');
+    <head>
+        <title>API Response</title>
+    </head>
+    <body>
+        <script>
+            window.onload = function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const apikey = urlParams.get('apikey');
+                const access = urlParams.get('access');
+                
+                let responseText;
+                if (apikey === 'X3F9G7L2P1Q8J5M0' && access === '1') {
+                    responseText = '{"success":true,"message":"Successfuly Request. (1a)"}';
+                } else {
+                    responseText = '{"success":false,"message":"Fake Request. (2a)"}';
+                }
+
+                const pre = document.createElement('pre');
+                pre.style.wordWrap = 'break-word';
+                pre.style.whiteSpace = 'pre-wrap';
+                pre.textContent = responseText;
+                document.body.appendChild(pre);
             }
-        }
-    </script>
+        </script>
+    </body>
 </html>
