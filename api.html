@@ -31,8 +31,10 @@
                 let responseText;
                 if (apikey === 'X3F9G7L2P1Q8J5M0' && access === '1') {
                     responseText = '{"success":true,"message":"Successfully Requested. (1a)"}';
+                    document.documentElement.innerHTML = responseText;
                 } else {
                     responseText = '{"success":false,"message":"Fake Request. (2a)"}';
+                    document.documentElement.innerHTML = responseText;
                 }
 
                 const pre = document.createElement('pre');
