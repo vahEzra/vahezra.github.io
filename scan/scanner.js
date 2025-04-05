@@ -2,10 +2,10 @@ const video = document.getElementById('video');
 const canvas = document.getElementById('canvas');
 const scanBtn = document.getElementById('scanBtn');
 
-// Load the reference barcode image
+// Load your actual barcode image
 const refImg = new Image();
 refImg.crossOrigin = 'anonymous';
-refImg.src = 'https://i.ibb.co/8dvMdnM/Screenshot-2025-04-05-at-10-24-31.png';
+refImg.src = 'https://i.ibb.co/XrFFRNMR/IMG-0257.jpg';
 
 navigator.mediaDevices.getUserMedia({
   video: { facingMode: { exact: "environment" } }
@@ -31,7 +31,7 @@ function compareImageData(a, b) {
   for (let i = 0; i < da.length; i++) {
     if (Math.abs(da[i] - db[i]) > 50) diff++;
   }
-  return diff < (da.length * 0.01); // 1% pixel mismatch tolerance
+  return diff < (da.length * 0.01); // 1% tolerance
 }
 
 scanBtn.onclick = () => {
