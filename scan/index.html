@@ -2,23 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Simple Barcode Match</title>
+  <title>Access Scanner</title>
   <style>
     body {
       background: #111;
       color: white;
+      font-family: sans-serif;
       display: flex;
       flex-direction: column;
       align-items: center;
-      font-family: sans-serif;
       padding: 20px;
     }
 
     video, canvas {
       width: 100%;
-      max-width: 500px;
+      max-width: 480px;
       border: 2px solid gray;
-      border-radius: 8px;
+      border-radius: 10px;
       margin-bottom: 20px;
     }
 
@@ -26,22 +26,22 @@
       background: black;
       color: white;
       border: 2px solid gray;
-      padding: 10px 20px;
+      padding: 12px 24px;
       font-size: 18px;
       cursor: pointer;
       border-radius: 5px;
     }
 
     button:hover {
-      background: #222;
+      background-color: #222;
     }
   </style>
 </head>
 <body>
 
   <h2>Scan Barcode</h2>
-  <video id="video" autoplay></video>
-  <canvas id="canvas" style="display:none;"></canvas>
+  <video id="video" autoplay playsinline></video>
+  <canvas id="canvas" style="display: none;"></canvas>
   <button id="scanBtn">Scan</button>
 
   <script>
@@ -49,58 +49,60 @@
     const canvas = document.getElementById('canvas');
     const scanBtn = document.getElementById('scanBtn');
 
-    // Start camera
-    navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
-      .then(stream => {
-        video.srcObject = stream;
-      })
-      .catch(err => console.error('Camera error:', err));
+    // Load reference barcode image
+    const refImg = new Image();
+    refImg.crossOrigin = 'Anonymous';
+    refImg.src = 'https://i.ibb.co/8dvMdnM/Screenshot-2025-04-05-at-10-24-31.png';
 
-    // Load your reference barcode image
-    const referenceImg = new Image();
-    referenceImg.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAABaCAYAAABa5qDFAAAACXBIWXMAAA7EAAAOxAGVKw4bAAAKFklEQVR4nO3dS3LaRBBF0bNItv//bMNSUuGEhgoMBmzTXuNk0AVdi8e73jNk0AAAAAAAAAAAAAAAAAADg3F3WS67/W9qrs...'; // (shortened — use full Base64 below)
+    navigator.mediaDevices.getUserMedia({
+      video: { facingMode: { exact: "environment" } }
+    }).then(stream => {
+      video.srcObject = stream;
+    }).catch(err => {
+      alert("Camera error: " + err.message);
+    });
 
-    // Convert image to canvas pixel data
     function getImageData(img) {
-      const tmpCanvas = document.createElement('canvas');
-      const ctx = tmpCanvas.getContext('2d');
-      tmpCanvas.width = img.width;
-      tmpCanvas.height = img.height;
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = img.width;
+      tempCanvas.height = img.height;
+      const ctx = tempCanvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
       return ctx.getImageData(0, 0, img.width, img.height);
     }
 
-    // Compare two image data pixel-wise
-    function compareImages(imgData1, imgData2) {
-      if (imgData1.width !== imgData2.width || imgData1.height !== imgData2.height) return false;
-      const pixels1 = imgData1.data;
-      const pixels2 = imgData2.data;
-      let mismatch = 0;
-      for (let i = 0; i < pixels1.length; i++) {
-        if (Math.abs(pixels1[i] - pixels2[i]) > 50) mismatch++;
+    function compareImageData(a, b) {
+      if (a.width !== b.width || a.height !== b.height) return false;
+      const da = a.data, db = b.data;
+      let diff = 0;
+      for (let i = 0; i < da.length; i++) {
+        if (Math.abs(da[i] - db[i]) > 50) diff++;
       }
-      const threshold = pixels1.length * 0.01; // 1% mismatch allowed
-      return mismatch < threshold;
+      return diff < (da.length * 0.01); // 1% pixel tolerance
     }
 
-    scanBtn.addEventListener('click', () => {
+    scanBtn.onclick = () => {
       const ctx = canvas.getContext('2d');
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       ctx.drawImage(video, 0, 0);
-      const captureData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      
+      // Resize capture to match reference image size
+      const scaled = document.createElement('canvas');
+      scaled.width = refImg.width;
+      scaled.height = refImg.height;
+      const sctx = scaled.getContext('2d');
+      sctx.drawImage(canvas, 0, 0, scaled.width, scaled.height);
+      const captureData = sctx.getImageData(0, 0, scaled.width, scaled.height);
 
-      // Resize and match size
-      const ref = getImageData(referenceImg);
-      const cropped = ctx.getImageData(0, 0, ref.width, ref.height);
+      const refData = getImageData(refImg);
 
-      const match = compareImages(ref, cropped);
-      if (match) {
+      if (compareImageData(captureData, refData)) {
         alert('Access granted');
       } else {
         alert('Access denied');
       }
-    });
+    };
   </script>
 </body>
 </html>
