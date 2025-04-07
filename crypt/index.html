@@ -1,56 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encryption and Decryption</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Secure String Encryptor</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      padding: 30px;
+      color: #333;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+    button {
+      padding: 10px 20px;
+      margin-right: 10px;
+      border: none;
+      background-color: #007BFF;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .output {
+      margin-top: 20px;
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 6px;
+      font-family: monospace;
+    }
+    .label {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h1>Custom Encryptor</h1>
+    <p>Enter a string (uppercase only, max 32 characters). Symbols and lowercase letters will be removed automatically.</p>
+    
+    <input type="text" id="inputString" placeholder="ENTER YOUR STRING..." maxlength="32" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')">
 
-<h2>Encryption and Decryption Example</h2>
+    <button onclick="encrypt()">Encrypt</button>
+    <button onclick="decrypt()">Decrypt</button>
 
-<input type="text" id="inputString" placeholder="Enter a string to encrypt">
-<button onclick="encrypt()">Encrypt</button>
-<button onclick="decrypt()">Decrypt</button>
+    <div class="output">
+      <div class="label">Encrypted:</div>
+      <div id="encryptedOutput">[Waiting for input]</div>
+    </div>
 
-<p><strong>Encrypted:</strong> <span id="encryptedOutput"></span></p>
-<p><strong>Decrypted:</strong> <span id="decryptedOutput"></span></p>
+    <div class="output">
+      <div class="label">Decrypted:</div>
+      <div id="decryptedOutput">[Waiting for encryption]</div>
+    </div>
+  </div>
 
-<script>
-// Custom encryption function
-function encrypt() {
-    const input = document.getElementById("inputString").value;
-    let encrypted = "";
-    const shift = 5; // Custom shift for each character
+  <script>
+    const shift = 7; // Shift value for the custom cipher
 
-    // Loop through each character of the input string
-    for (let i = 0; i < input.length; i++) {
-        // Shift the character's ASCII code and convert back to character
-        encrypted += String.fromCharCode(input.charCodeAt(i) + shift);
+    function formatKey(str) {
+      // Pads or trims to 19 chars and formats as XXXXX-XXX-XXXXXX-XXXX
+      const cleaned = str.padEnd(19, 'X').substring(0, 19);
+      return `${cleaned.substring(0,5)}-${cleaned.substring(5,8)}-${cleaned.substring(8,14)}-${cleaned.substring(14,19)}`;
     }
 
-    // Format the encrypted string in the desired format XXXXX-XXX-XXXXXX-XXXX
-    let formatted = encrypted.slice(0, 5) + "-" + encrypted.slice(5, 8) + "-" + encrypted.slice(8, 14) + "-" + encrypted.slice(14, 18);
-    document.getElementById("encryptedOutput").textContent = formatted;
-}
+    function encrypt() {
+      const input = document.getElementById("inputString").value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      if (input.length === 0) {
+        alert("Please enter a valid input.");
+        return;
+      }
 
-// Custom decryption function
-function decrypt() {
-    const encrypted = document.getElementById("encryptedOutput").textContent;
-    let decrypted = "";
-    const shift = 5; // Custom shift to reverse the encryption
+      let result = "";
+      for (let i = 0; i < input.length; i++) {
+        let code = input.charCodeAt(i);
 
-    // Remove hyphens before decrypting
-    const cleanEncrypted = encrypted.replace(/-/g, "");
+        // Shift A-Z and 0-9 only
+        if (code >= 65 && code <= 90) { // A-Z
+          code = ((code - 65 + shift) % 26) + 65;
+        } else if (code >= 48 && code <= 57) { // 0-9
+          code = ((code - 48 + shift) % 10) + 48;
+        }
 
-    // Loop through each character and reverse the shift
-    for (let i = 0; i < cleanEncrypted.length; i++) {
-        decrypted += String.fromCharCode(cleanEncrypted.charCodeAt(i) - shift);
+        result += String.fromCharCode(code);
+      }
+
+      document.getElementById("encryptedOutput").textContent = formatKey(result);
+      document.getElementById("decryptedOutput").textContent = "[Waiting for decryption]";
     }
 
-    document.getElementById("decryptedOutput").textContent = decrypted;
-}
-</script>
+    function decrypt() {
+      const encrypted = document.getElementById("encryptedOutput").textContent.replace(/-/g, '');
+      if (encrypted.includes("[") || encrypted.length === 0) {
+        alert("Nothing to decrypt.");
+        return;
+      }
 
+      let result = "";
+      for (let i = 0; i < encrypted.length; i++) {
+        let code = encrypted.charCodeAt(i);
+
+        if (code >= 65 && code <= 90) { // A-Z
+          code = ((code - 65 - shift + 26) % 26) + 65;
+        } else if (code >= 48 && code <= 57) { // 0-9
+          code = ((code - 48 - shift + 10) % 10) + 48;
+        }
+
+        result += String.fromCharCode(code);
+      }
+
+      document.getElementById("decryptedOutput").textContent = result.trim();
+    }
+  </script>
 </body>
 </html>
