@@ -34,8 +34,8 @@
       padding: 30px;
       border-radius: 20px;
       box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-      width: 80%;
-      max-width: 900px;
+      width: 90%;
+      max-width: 1000px;
       transform: perspective(1000px) rotateX(4deg);
       transition: transform 0.3s ease;
     }
@@ -98,7 +98,7 @@
       font-size: 16px;
       overflow-x: auto;
       word-wrap: break-word;
-      white-space: nowrap;
+      white-space: pre-wrap;
     }
 
     .error {
@@ -149,6 +149,7 @@
         <li>Input sanitized to uppercase alphanumerics</li>
         <li>Glowing hover effects & 3D animated card</li>
         <li>Real-time error messages and smooth UX</li>
+        <li>Enhanced output area with wrapping for long strings</li>
       </ul>
     </div>
   </div>
@@ -179,7 +180,11 @@
     }
 
     function formatKey(str) {
-      return `${str.slice(0,5)}-${str.slice(5,8)}-${str.slice(8,14)}-${str.slice(14,18)}`;
+      let output = '';
+      for (let i = 0; i < str.length; i += 5) {
+        output += str.slice(i, i + 5) + '-';
+      }
+      return output.slice(0, -1);
     }
 
     function encrypt() {
@@ -191,7 +196,7 @@
       hideError();
 
       let encrypted = '';
-      for (let i = 0; i < 18; i++) {
+      for (let i = 0; i < input.length; i++) {
         let code = input.charCodeAt(i);
         if (code >= 65 && code <= 90) {
           code = ((code - 65 + shift) % 26) + 65;
@@ -208,7 +213,7 @@
     function decrypt() {
       const encrypted = document.getElementById("encryptedOutput").textContent.replace(/-/g, '');
 
-      if (encrypted.length !== 18 || encrypted.includes("Waiting")) {
+      if (encrypted.length !== 32 || encrypted.includes("Waiting")) {
         showError("Invalid or missing encrypted string.");
         return;
       }
