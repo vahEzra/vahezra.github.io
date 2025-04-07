@@ -4,12 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Vyro Encryptor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --purple: #9b5de5;
       --orange: #f15bb5;
       --black: #0f0f0f;
-      --glow: 0 0 12px var(--purple);
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: 'Montserrat', sans-serif;
     }
 
     body {
@@ -17,7 +22,6 @@
       padding: 0;
       background: linear-gradient(135deg, #0f0f0f 0%, #1c1c1c 100%);
       color: white;
-      font-family: 'Segoe UI', sans-serif;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -29,21 +33,22 @@
       background: #1a1a1a;
       padding: 30px;
       border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-      width: 600px;
-      transform: perspective(800px) rotateX(5deg);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      width: 80%;
+      max-width: 900px;
+      transform: perspective(1000px) rotateX(4deg);
       transition: transform 0.3s ease;
     }
 
     .container:hover {
-      transform: perspective(800px) rotateX(0deg);
+      transform: perspective(1000px) rotateX(0deg);
     }
 
     h1 {
       text-align: center;
       color: var(--purple);
       margin-bottom: 20px;
-      text-shadow: var(--glow);
+      text-shadow: 0 0 10px var(--purple);
     }
 
     input[type="text"] {
@@ -67,7 +72,7 @@
 
     button {
       padding: 12px 18px;
-      font-weight: bold;
+      font-weight: 600;
       border: none;
       margin-top: 15px;
       margin-right: 10px;
@@ -75,7 +80,7 @@
       color: white;
       border-radius: 10px;
       cursor: pointer;
-      box-shadow: 0 0 10px var(--purple);
+      box-shadow: 0 0 12px var(--purple);
       transition: all 0.3s ease;
     }
 
@@ -89,9 +94,11 @@
       padding: 15px;
       border-radius: 10px;
       margin-top: 20px;
-      font-family: monospace;
+      font-family: 'Montserrat', monospace;
       font-size: 16px;
+      overflow-x: auto;
       word-wrap: break-word;
+      white-space: nowrap;
     }
 
     .error {
@@ -100,9 +107,10 @@
 
     .features {
       margin-top: 30px;
-      padding: 10px;
+      padding: 15px;
       background: rgba(255, 255, 255, 0.05);
       border-left: 4px solid var(--orange);
+      border-radius: 10px;
     }
 
     .features ul {
@@ -123,9 +131,8 @@
 <body>
   <div class="container">
     <h1>Vyro Encryptor</h1>
-    <input id="inputString" type="text" maxlength="32" placeholder="ENTER 32 CHARACTERS"
-      oninput="sanitize(this)" />
-    
+    <input id="inputString" type="text" maxlength="32" placeholder="ENTER 32 CHARACTERS" oninput="sanitize(this)" />
+
     <button onmouseover="playSound()" onclick="encrypt()">Encrypt</button>
     <button onmouseover="playSound()" onclick="decrypt()">Decrypt</button>
 
