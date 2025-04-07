@@ -6,35 +6,42 @@
   <title>Secure String Encryptor</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f4f4f4;
-      padding: 30px;
-      color: #333;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #121212;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 40px;
     }
+
     .container {
       max-width: 600px;
       margin: auto;
-      background: #fff;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      background: #1e1e1e;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
     }
+
     h1 {
       text-align: center;
       margin-bottom: 20px;
     }
+
     input[type="text"] {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       font-size: 16px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
+      margin-bottom: 10px;
+      border: 1px solid #444;
+      border-radius: 8px;
+      background: #2a2a2a;
+      color: #fff;
       text-transform: uppercase;
     }
+
     button {
-      padding: 10px 20px;
-      margin-right: 10px;
+      padding: 10px 16px;
+      margin: 5px 0;
       border: none;
       background-color: #007BFF;
       color: white;
@@ -42,16 +49,27 @@
       cursor: pointer;
       font-weight: bold;
     }
+
     button:hover {
       background-color: #0056b3;
     }
-    .output {
-      margin-top: 20px;
-      background: #e9ecef;
-      padding: 15px;
+
+    .output, .error {
+      margin-top: 15px;
+      padding: 12px;
       border-radius: 6px;
+    }
+
+    .output {
+      background: #212121;
       font-family: monospace;
     }
+
+    .error {
+      background: #b00020;
+      color: #fff;
+    }
+
     .label {
       font-weight: bold;
       margin-bottom: 5px;
@@ -61,12 +79,16 @@
 <body>
   <div class="container">
     <h1>Custom Encryptor</h1>
-    <p>Enter a string (uppercase only, max 32 characters). Symbols and lowercase letters will be removed automatically.</p>
-    
-    <input type="text" id="inputString" placeholder="ENTER YOUR STRING..." maxlength="32" oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '')">
+    <p>Enter a 32-character string (uppercase letters and numbers only):</p>
+
+    <input type="text" id="inputString" maxlength="32"
+      placeholder="32 CHARACTERS MAX" 
+      oninput="sanitizeInput(this)" />
 
     <button onclick="encrypt()">Encrypt</button>
     <button onclick="decrypt()">Decrypt</button>
+
+    <div id="errorBox" class="error" style="display: none;"></div>
 
     <div class="output">
       <div class="label">Encrypted:</div>
@@ -80,60 +102,75 @@
   </div>
 
   <script>
-    const shift = 7; // Shift value for the custom cipher
+    const shift = 7;
+
+    function sanitizeInput(input) {
+      input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+      hideError();
+    }
+
+    function showError(msg) {
+      const box = document.getElementById("errorBox");
+      box.textContent = msg;
+      box.style.display = "block";
+    }
+
+    function hideError() {
+      const box = document.getElementById("errorBox");
+      box.style.display = "none";
+    }
 
     function formatKey(str) {
-      // Pads or trims to 19 chars and formats as XXXXX-XXX-XXXXXX-XXXX
-      const cleaned = str.padEnd(19, 'X').substring(0, 19);
-      return `${cleaned.substring(0,5)}-${cleaned.substring(5,8)}-${cleaned.substring(8,14)}-${cleaned.substring(14,19)}`;
+      return `${str.slice(0,5)}-${str.slice(5,8)}-${str.slice(8,14)}-${str.slice(14,18)}`;
     }
 
     function encrypt() {
-      const input = document.getElementById("inputString").value.toUpperCase().replace(/[^A-Z0-9]/g, '');
-      if (input.length === 0) {
-        alert("Please enter a valid input.");
+      const input = document.getElementById("inputString").value;
+      if (input.length !== 32) {
+        showError("Input must be exactly 32 characters long.");
         return;
       }
 
-      let result = "";
+      hideError();
+      let encrypted = "";
+
       for (let i = 0; i < input.length; i++) {
         let code = input.charCodeAt(i);
-
-        // Shift A-Z and 0-9 only
         if (code >= 65 && code <= 90) { // A-Z
           code = ((code - 65 + shift) % 26) + 65;
         } else if (code >= 48 && code <= 57) { // 0-9
           code = ((code - 48 + shift) % 10) + 48;
         }
-
-        result += String.fromCharCode(code);
+        encrypted += String.fromCharCode(code);
       }
 
-      document.getElementById("encryptedOutput").textContent = formatKey(result);
+      const formatted = formatKey(encrypted);
+      document.getElementById("encryptedOutput").textContent = formatted;
       document.getElementById("decryptedOutput").textContent = "[Waiting for decryption]";
     }
 
     function decrypt() {
       const encrypted = document.getElementById("encryptedOutput").textContent.replace(/-/g, '');
-      if (encrypted.includes("[") || encrypted.length === 0) {
-        alert("Nothing to decrypt.");
+
+      if (encrypted.length < 18 || encrypted.includes("Waiting")) {
+        showError("Nothing valid to decrypt.");
         return;
       }
 
-      let result = "";
+      hideError();
+      let decrypted = "";
+
       for (let i = 0; i < encrypted.length; i++) {
         let code = encrypted.charCodeAt(i);
-
         if (code >= 65 && code <= 90) { // A-Z
           code = ((code - 65 - shift + 26) % 26) + 65;
         } else if (code >= 48 && code <= 57) { // 0-9
           code = ((code - 48 - shift + 10) % 10) + 48;
         }
-
-        result += String.fromCharCode(code);
+        decrypted += String.fromCharCode(code);
       }
 
-      document.getElementById("decryptedOutput").textContent = result.trim();
+      document.getElementById("decryptedOutput").textContent = decrypted;
     }
   </script>
 </body>
