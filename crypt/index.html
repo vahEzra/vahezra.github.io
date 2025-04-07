@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encryption and Decryption</title>
+</head>
+<body>
+
+<h2>Encryption and Decryption Example</h2>
+
+<input type="text" id="inputString" placeholder="Enter a string to encrypt">
+<button onclick="encrypt()">Encrypt</button>
+<button onclick="decrypt()">Decrypt</button>
+
+<p><strong>Encrypted:</strong> <span id="encryptedOutput"></span></p>
+<p><strong>Decrypted:</strong> <span id="decryptedOutput"></span></p>
+
+<script>
+// Custom encryption function
+function encrypt() {
+    const input = document.getElementById("inputString").value;
+    let encrypted = "";
+    const shift = 5; // Custom shift for each character
+
+    // Loop through each character of the input string
+    for (let i = 0; i < input.length; i++) {
+        // Shift the character's ASCII code and convert back to character
+        encrypted += String.fromCharCode(input.charCodeAt(i) + shift);
+    }
+
+    // Format the encrypted string in the desired format XXXXX-XXX-XXXXXX-XXXX
+    let formatted = encrypted.slice(0, 5) + "-" + encrypted.slice(5, 8) + "-" + encrypted.slice(8, 14) + "-" + encrypted.slice(14, 18);
+    document.getElementById("encryptedOutput").textContent = formatted;
+}
+
+// Custom decryption function
+function decrypt() {
+    const encrypted = document.getElementById("encryptedOutput").textContent;
+    let decrypted = "";
+    const shift = 5; // Custom shift to reverse the encryption
+
+    // Remove hyphens before decrypting
+    const cleanEncrypted = encrypted.replace(/-/g, "");
+
+    // Loop through each character and reverse the shift
+    for (let i = 0; i < cleanEncrypted.length; i++) {
+        decrypted += String.fromCharCode(cleanEncrypted.charCodeAt(i) - shift);
+    }
+
+    document.getElementById("decryptedOutput").textContent = decrypted;
+}
+</script>
+
+</body>
+</html>
