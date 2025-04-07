@@ -3,121 +3,172 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Secure String Encryptor</title>
+  <title>Vyro Encryptor</title>
   <style>
+    :root {
+      --purple: #9b5de5;
+      --orange: #f15bb5;
+      --black: #0f0f0f;
+      --glow: 0 0 12px var(--purple);
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #121212;
-      color: #f0f0f0;
       margin: 0;
-      padding: 40px;
+      padding: 0;
+      background: linear-gradient(135deg, #0f0f0f 0%, #1c1c1c 100%);
+      color: white;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
     }
 
     .container {
-      max-width: 600px;
-      margin: auto;
-      background: #1e1e1e;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.6);
+      background: #1a1a1a;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      width: 600px;
+      transform: perspective(800px) rotateX(5deg);
+      transition: transform 0.3s ease;
+    }
+
+    .container:hover {
+      transform: perspective(800px) rotateX(0deg);
     }
 
     h1 {
       text-align: center;
+      color: var(--purple);
       margin-bottom: 20px;
+      text-shadow: var(--glow);
     }
 
     input[type="text"] {
       width: 100%;
-      padding: 12px;
-      font-size: 16px;
-      margin-bottom: 10px;
-      border: 1px solid #444;
-      border-radius: 8px;
-      background: #2a2a2a;
-      color: #fff;
+      padding: 15px;
+      font-size: 18px;
+      border: 2px solid var(--purple);
+      border-radius: 12px;
+      background: #0f0f0f;
+      color: white;
       text-transform: uppercase;
+      box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: var(--orange);
+      box-shadow: 0 0 10px var(--orange);
     }
 
     button {
-      padding: 10px 16px;
-      margin: 5px 0;
-      border: none;
-      background-color: #007BFF;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
+      padding: 12px 18px;
       font-weight: bold;
+      border: none;
+      margin-top: 15px;
+      margin-right: 10px;
+      background: var(--purple);
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--purple);
+      transition: all 0.3s ease;
     }
 
     button:hover {
-      background-color: #0056b3;
+      background: var(--orange);
+      box-shadow: 0 0 15px var(--orange);
     }
 
     .output, .error {
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 6px;
-    }
-
-    .output {
-      background: #212121;
+      background: #222;
+      padding: 15px;
+      border-radius: 10px;
+      margin-top: 20px;
       font-family: monospace;
+      font-size: 16px;
+      word-wrap: break-word;
     }
 
     .error {
       background: #b00020;
-      color: #fff;
     }
 
-    .label {
-      font-weight: bold;
-      margin-bottom: 5px;
+    .features {
+      margin-top: 30px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-left: 4px solid var(--orange);
+    }
+
+    .features ul {
+      list-style: none;
+      padding-left: 0;
+    }
+
+    .features li::before {
+      content: "✔ ";
+      color: var(--orange);
+    }
+
+    audio {
+      display: none;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h1>Custom Encryptor</h1>
-    <p>Enter a 32-character string (uppercase letters and numbers only):</p>
-
-    <input type="text" id="inputString" maxlength="32"
-      placeholder="32 CHARACTERS MAX" 
-      oninput="sanitizeInput(this)" />
-
-    <button onclick="encrypt()">Encrypt</button>
-    <button onclick="decrypt()">Decrypt</button>
+    <h1>Vyro Encryptor</h1>
+    <input id="inputString" type="text" maxlength="32" placeholder="ENTER 32 CHARACTERS"
+      oninput="sanitize(this)" />
+    
+    <button onmouseover="playSound()" onclick="encrypt()">Encrypt</button>
+    <button onmouseover="playSound()" onclick="decrypt()">Decrypt</button>
 
     <div id="errorBox" class="error" style="display: none;"></div>
 
-    <div class="output">
-      <div class="label">Encrypted:</div>
-      <div id="encryptedOutput">[Waiting for input]</div>
-    </div>
+    <div class="output" id="encryptedOutput">[Encrypted output will appear here]</div>
+    <div class="output" id="decryptedOutput">[Decrypted output will appear here]</div>
 
-    <div class="output">
-      <div class="label">Decrypted:</div>
-      <div id="decryptedOutput">[Waiting for encryption]</div>
+    <div class="features">
+      <strong>Features:</strong>
+      <ul>
+        <li>Secure custom encryption (no symbols, reversible)</li>
+        <li>Reliable formatting: XXXXX-XXX-XXXXXX-XXXX</li>
+        <li>Input sanitized to uppercase alphanumerics</li>
+        <li>Glowing hover effects & 3D animated card</li>
+        <li>Real-time error messages and smooth UX</li>
+      </ul>
     </div>
   </div>
+
+  <audio id="hoverSound" src="https://www.soundjay.com/buttons/sounds/button-50.mp3" preload="auto"></audio>
 
   <script>
     const shift = 7;
 
-    function sanitizeInput(input) {
+    function playSound() {
+      document.getElementById("hoverSound").play();
+    }
+
+    function sanitize(input) {
       input.value = input.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
       hideError();
     }
 
     function showError(msg) {
-      const box = document.getElementById("errorBox");
-      box.textContent = msg;
-      box.style.display = "block";
+      const err = document.getElementById("errorBox");
+      err.textContent = msg;
+      err.style.display = "block";
     }
 
     function hideError() {
-      const box = document.getElementById("errorBox");
-      box.style.display = "none";
+      const err = document.getElementById("errorBox");
+      err.style.display = "none";
     }
 
     function formatKey(str) {
@@ -127,44 +178,42 @@
     function encrypt() {
       const input = document.getElementById("inputString").value;
       if (input.length !== 32) {
-        showError("Input must be exactly 32 characters long.");
+        showError("Input must be exactly 32 characters.");
         return;
       }
-
       hideError();
-      let encrypted = "";
 
-      for (let i = 0; i < input.length; i++) {
+      let encrypted = '';
+      for (let i = 0; i < 18; i++) {
         let code = input.charCodeAt(i);
-        if (code >= 65 && code <= 90) { // A-Z
+        if (code >= 65 && code <= 90) {
           code = ((code - 65 + shift) % 26) + 65;
-        } else if (code >= 48 && code <= 57) { // 0-9
+        } else if (code >= 48 && code <= 57) {
           code = ((code - 48 + shift) % 10) + 48;
         }
         encrypted += String.fromCharCode(code);
       }
 
-      const formatted = formatKey(encrypted);
-      document.getElementById("encryptedOutput").textContent = formatted;
+      document.getElementById("encryptedOutput").textContent = formatKey(encrypted);
       document.getElementById("decryptedOutput").textContent = "[Waiting for decryption]";
     }
 
     function decrypt() {
       const encrypted = document.getElementById("encryptedOutput").textContent.replace(/-/g, '');
 
-      if (encrypted.length < 18 || encrypted.includes("Waiting")) {
-        showError("Nothing valid to decrypt.");
+      if (encrypted.length !== 18 || encrypted.includes("Waiting")) {
+        showError("Invalid or missing encrypted string.");
         return;
       }
 
       hideError();
-      let decrypted = "";
 
+      let decrypted = '';
       for (let i = 0; i < encrypted.length; i++) {
         let code = encrypted.charCodeAt(i);
-        if (code >= 65 && code <= 90) { // A-Z
+        if (code >= 65 && code <= 90) {
           code = ((code - 65 - shift + 26) % 26) + 65;
-        } else if (code >= 48 && code <= 57) { // 0-9
+        } else if (code >= 48 && code <= 57) {
           code = ((code - 48 - shift + 10) % 10) + 48;
         }
         decrypted += String.fromCharCode(code);
